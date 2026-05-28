@@ -1,0 +1,16 @@
+[general]
+# Polling interval in seconds (waybar also has its own interval)
+interval = 30
+
+[providers.deepseek]
+enabled = true
+# platform_token: from platform.deepseek.com usage page -> Network tab
+# Find any request to platform.deepseek.com, copy the "authorization" header value
+# (the full string like "Bearer 9Jd9qGcA...")
+platform_token = ""
+display_name = "🐬"
+
+[providers.volcengine]
+enabled = true
+cookie_file = "~/.config/waybar/scripts/api-tracker/.volcengine_cookie"
+display_name = "🌋"
