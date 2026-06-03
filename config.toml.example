@@ -14,3 +14,7 @@ display_name = "🐬"
 enabled = true
 cookie_file = "~/.config/waybar/scripts/api-tracker/.volcengine_cookie"
 display_name = "🌋"
+# auto_login: 自动登录火山引擎，提取 cookie 写入 cookie_file
+# 优先级低于直接配置 cookie 或 cookie_file
+auto_login_username = ""
+auto_login_password = ""

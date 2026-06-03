@@ -5,6 +5,7 @@ from typing import Optional
 import requests
 
 from .base import BaseProvider, UsageInfo, Item
+from .volcengine_login import login_and_get_cookies
 
 
 VOLC_API = "https://console.volcengine.com/api/top/ark/cn-beijing/2024-01-01/GetCodingPlanUsage"
@@ -44,10 +45,19 @@ class VolcengineProvider(BaseProvider):
             try:
                 cookie_str = Path(cookie_file).expanduser().read_text().strip()
             except OSError:
-                return UsageInfo(0, 0, error=f"cannot read cookie_file: {cookie_file}")
+                cookie_str = ""
 
         if not cookie_str:
-            return UsageInfo(0, 0, error="cookie not configured")
+            username = self.config.get("auto_login_username", "")
+            password = self.config.get("auto_login_password", "")
+            if username and password:
+                try:
+                    cf = Path(cookie_file).expanduser() if cookie_file else Path.home() / ".config" / "waybar" / "scripts" / "api-tracker" / ".volcengine_cookie"
+                    cookie_str = login_and_get_cookies(username, password, cf)
+                except Exception as e:
+                    return UsageInfo(0, 0, error=f"auto_login failed: {e}")
+            else:
+                return UsageInfo(0, 0, error="cookie not configured")
 
         data = self._fetch_usage(cookie_str)
         if data is None:
