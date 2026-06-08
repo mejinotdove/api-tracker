@@ -19,7 +19,6 @@
 ## 环境要求
 
 - Python 3.11+
-- `requests` 库
 - Waybar（用于显示模块）
 
 ## 安装
@@ -30,10 +29,13 @@
 git clone git@github.com:mejinotdove/api-tracker.git ~/.config/waybar/scripts/api-tracker
 ```
 
-### 2. 安装 Python 依赖
+### 2. 创建 venv 并安装依赖
 
 ```bash
-pip install requests
+cd ~/.config/waybar/scripts/api-tracker
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/playwright install chromium  # 仅火山引擎自动登录需要
 ```
 
 ### 3. 配置凭据
@@ -54,10 +56,16 @@ cp config.toml.example config.toml
 
 #### 火山引擎
 
+**方式 A：手动获取 Cookie**
+
 1. 登录[火山引擎 ARK 控制台](https://console.volcengine.com/ark/region:ark+cn-beijing/openManagement)
 2. 打开浏览器开发者工具 → Network 标签
 3. 找到任意发往 `console.volcengine.com` 的请求，复制 `Cookie` 请求头
 4. 保存到 `~/.config/waybar/scripts/api-tracker/.volcengine_cookie`
+
+**方式 B：自动登录（需要 playwright）**
+
+在 `config.toml` 中设置 `auto_login_username` 和 `auto_login_password`（也可通过环境变量 `VOLCENGINE_USERNAME` / `VOLCENGINE_PASSWORD` 传入），cookie 将自动获取并刷新。
 
 ### 4. 添加到 Waybar 配置
 
@@ -65,7 +73,7 @@ cp config.toml.example config.toml
 
 ```jsonc
 "custom/api-tracker": {
-    "exec": "python3 ~/.config/waybar/scripts/api-tracker/main.py 2>/dev/null",
+    "exec": "~/.config/waybar/scripts/api-tracker/.venv/bin/python ~/.config/waybar/scripts/api-tracker/main.py 2>/dev/null",
     "interval": 30,
     "return-type": "json",
     "format": "{}",

@@ -19,7 +19,6 @@ A [Waybar](https://github.com/Alexays/Waybar) custom module that tracks API usag
 ## Requirements
 
 - Python 3.11+
-- `requests` library
 - Waybar (for displaying the module)
 
 ## Installation
@@ -30,10 +29,13 @@ A [Waybar](https://github.com/Alexays/Waybar) custom module that tracks API usag
 git clone git@github.com:mejinotdove/api-tracker.git ~/.config/waybar/scripts/api-tracker
 ```
 
-### 2. Install Python dependencies
+### 2. Set up venv and install dependencies
 
 ```bash
-pip install requests
+cd ~/.config/waybar/scripts/api-tracker
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/playwright install chromium  # only needed for Volcengine auto-login
 ```
 
 ### 3. Configure credentials
@@ -54,10 +56,16 @@ Edit `config.toml` and fill in your credentials:
 
 #### Volcengine
 
+**Option A: Manual cookie**
+
 1. Log in to [Volcengine ARK console](https://console.volcengine.com/ark/region:ark+cn-beijing/openManagement)
 2. Open browser DevTools → Network tab
 3. Find any request to `console.volcengine.com` and copy the `Cookie` header
 4. Save it to `~/.config/waybar/scripts/api-tracker/.volcengine_cookie`
+
+**Option B: Auto-login (requires playwright)**
+
+Set `auto_login_username` and `auto_login_password` in `config.toml` (or via env vars `VOLCENGINE_USERNAME` / `VOLCENGINE_PASSWORD`). The cookie will be fetched and refreshed automatically.
 
 ### 4. Add to Waybar config
 
@@ -65,7 +73,7 @@ Add the following block to your Waybar config (`~/.config/waybar/config.jsonc`):
 
 ```jsonc
 "custom/api-tracker": {
-    "exec": "python3 ~/.config/waybar/scripts/api-tracker/main.py 2>/dev/null",
+    "exec": "~/.config/waybar/scripts/api-tracker/.venv/bin/python ~/.config/waybar/scripts/api-tracker/main.py 2>/dev/null",
     "interval": 30,
     "return-type": "json",
     "format": "{}",
