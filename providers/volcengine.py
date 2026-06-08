@@ -41,6 +41,13 @@ class VolcengineProvider(BaseProvider):
     def get_usage(self) -> UsageInfo:
         cookie_str = self.config.get("cookie", "")
         cookie_file = self.config.get("cookie_file", "")
+        username = os.environ.get("VOLCENGINE_USERNAME") or self.config.get("auto_login_username", "")
+        password = os.environ.get("VOLCENGINE_PASSWORD") or self.config.get("auto_login_password", "")
+        cf_path = (
+            Path(cookie_file).expanduser()
+            if cookie_file
+            else Path.home() / ".config" / "waybar" / "scripts" / "api-tracker" / ".volcengine_cookie"
+        )
 
         if not cookie_str and cookie_file:
             try:
@@ -49,18 +56,23 @@ class VolcengineProvider(BaseProvider):
                 cookie_str = ""
 
         if not cookie_str:
-            username = os.environ.get("VOLCENGINE_USERNAME") or self.config.get("auto_login_username", "")
-            password = os.environ.get("VOLCENGINE_PASSWORD") or self.config.get("auto_login_password", "")
             if username and password:
                 try:
-                    cf = Path(cookie_file).expanduser() if cookie_file else Path.home() / ".config" / "waybar" / "scripts" / "api-tracker" / ".volcengine_cookie"
-                    cookie_str = login_and_get_cookies(username, password, cf)
+                    cookie_str = login_and_get_cookies(username, password, cf_path)
                 except Exception as e:
                     return UsageInfo(0, 0, error=f"auto_login failed: {e}")
             else:
                 return UsageInfo(0, 0, error="cookie not configured")
 
         data = self._fetch_usage(cookie_str)
+        # If fetch failed (likely expired cookie), try re-login once
+        if data is None and username and password:
+            try:
+                cookie_str = login_and_get_cookies(username, password, cf_path)
+            except Exception as e:
+                return UsageInfo(0, 0, error=f"auto_login failed: {e}")
+            data = self._fetch_usage(cookie_str)
+
         if data is None:
             return UsageInfo(0, 0, error="failed to fetch Coding Plan usage")
 
