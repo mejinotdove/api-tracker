@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
-
 
 LOGIN_URL = "https://console.volcengine.com/auth/login"
 TARGET_URL = "https://console.volcengine.com/home"
@@ -9,6 +7,8 @@ COOKIE_DOMAIN = ".volcengine.com"
 
 
 def login_and_get_cookies(username: str, password: str, cookie_file: Path) -> str:
+    from playwright.sync_api import sync_playwright
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(
