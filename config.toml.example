@@ -7,6 +7,7 @@ enabled = true
 # platform_token: from platform.deepseek.com usage page -> Network tab
 # Find any request to platform.deepseek.com, copy the "authorization" header value
 # (the full string like "Bearer 9Jd9qGcA...")
+# 也支持通过环境变量 DEEPSEEK_PLATFORM_TOKEN 传入，优先级高于配置文件
 platform_token = ""
 display_name = "🐬"
 
@@ -16,5 +17,6 @@ cookie_file = "~/.config/waybar/scripts/api-tracker/.volcengine_cookie"
 display_name = "🌋"
 # auto_login: 自动登录火山引擎，提取 cookie 写入 cookie_file
 # 优先级低于直接配置 cookie 或 cookie_file
+# 也支持通过环境变量 VOLCENGINE_USERNAME / VOLCENGINE_PASSWORD 传入，优先级高于配置文件
 auto_login_username = ""
 auto_login_password = ""

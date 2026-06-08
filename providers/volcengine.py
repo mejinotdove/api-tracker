@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import time
 from typing import Optional
@@ -48,8 +49,8 @@ class VolcengineProvider(BaseProvider):
                 cookie_str = ""
 
         if not cookie_str:
-            username = self.config.get("auto_login_username", "")
-            password = self.config.get("auto_login_password", "")
+            username = os.environ.get("VOLCENGINE_USERNAME") or self.config.get("auto_login_username", "")
+            password = os.environ.get("VOLCENGINE_PASSWORD") or self.config.get("auto_login_password", "")
             if username and password:
                 try:
                     cf = Path(cookie_file).expanduser() if cookie_file else Path.home() / ".config" / "waybar" / "scripts" / "api-tracker" / ".volcengine_cookie"

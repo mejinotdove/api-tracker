@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from typing import Optional
 
@@ -23,7 +24,7 @@ def get_request_header(bearer: str) -> dict:
 
 class DeepSeekProvider(BaseProvider):
     def get_usage(self) -> UsageInfo:
-        platform_token = self.config.get("platform_token", "")
+        platform_token = os.environ.get("DEEPSEEK_PLATFORM_TOKEN") or self.config.get("platform_token", "")
         if not platform_token:
             return UsageInfo(0, 0, error="platform_token not configured")
 
